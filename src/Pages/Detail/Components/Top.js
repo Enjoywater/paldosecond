@@ -3,6 +3,7 @@ import styled from "styled-components";
 import PurchaseBox from "./PurchaseBox";
 import { starRating } from "../../../Components/tool/tool";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
+import { api } from "../../../config/api";
 
 const Top = ({ detail, flag, iconName, iconList, setDetail }) => {
   const {
@@ -22,11 +23,10 @@ const Top = ({ detail, flag, iconName, iconList, setDetail }) => {
 
   const handleWishlist = () => {
     setDetail({ ...detail, wishlist: !detail.wishlist });
-    fetch(`http://13.209.10.86:8000/accounts/wishlist/${detail.id}`, {
+    fetch(`${api}/accounts/wishlist/${detail.id}`, {
       method: "PATCH",
       headers: {
-        Authorization:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyfQ.Qq0oXYANstjhyDGnyKR658yxUNeE4R36ERuodLf0aMk",
+        Authorization: localStorage.getItem("token"),
       },
     });
   };

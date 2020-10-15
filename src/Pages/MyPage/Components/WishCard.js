@@ -3,12 +3,21 @@ import styled from "styled-components";
 import { FLAG } from "../../List/textConstant";
 
 const WishCard = ({ item }) => {
-  const { winery, wine_name, year, nation, region, rating, ratings } = item;
+  const {
+    winery,
+    wine_name,
+    year,
+    nation,
+    region,
+    rating,
+    ratings,
+    image_url,
+  } = item;
   return (
     <Container>
       <ContentBox>
         <ImgContainer>
-          <Img />
+          <Img image_url={image_url} />
         </ImgContainer>
         <TextContainer>
           <TitleBox>
@@ -75,8 +84,8 @@ const ImgContainer = styled.div`
   height: 100%;
 `;
 
-const Img = styled.img.attrs(() => ({
-  src: "http://images.vivino.com/thumbs/TGdart4zRQGI70hl9nnjTw_pb_x300.png",
+const Img = styled.img.attrs(({ image_url }) => ({
+  src: image_url,
 }))`
   width: 100%;
   height: 100%;

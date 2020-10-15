@@ -14,6 +14,7 @@ const Cart = () => {
     })
       .then((res) => res.json())
       .then((result) => {
+        console.log(result);
         const temp = {};
         result.cart_list.result.map((item) => (temp[item.id] = item));
         setCartList(temp);

@@ -27,14 +27,19 @@ const PurchaseBox = ({ detail }) => {
     fetch(`${api}/orders/carts`, {
       method: "POST",
       headers: {
-        Authorization:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyfQ.Qq0oXYANstjhyDGnyKR658yxUNeE4R36ERuodLf0aMk",
+        Authorization: localStorage.getItem("token"),
       },
       body: JSON.stringify({
         vintage_id: detail.id,
         quantity: quantity,
       }),
-    });
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.message) {
+          alert("상품이 장바구니에 추가되었습니다.");
+        }
+      });
   };
 
   return (

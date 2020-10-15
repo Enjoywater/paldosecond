@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { AiOutlineClose } from "react-icons/ai";
 import { Btn } from "../../Components/tool/tool";
+import { api } from "../../config/api";
 
 function SignUpModal({
   className,
@@ -27,11 +28,12 @@ function SignUpModal({
   const loginWithKakao = () => {
     window.Kakao.Auth.login({
       success: function (authObj) {
-        fetch("http://10.58.7.104:8000/accounts/signin", {
+        fetch(`${api}/accounts/signin`, {
           headers: { Authorization: authObj.access_token },
         })
           .then((res) => res.json())
           .then((res) => {
+            console.log(res);
             if (res.Authorization) {
               localStorage.setItem("token", res.Authorization);
               alert("Log-in Successful!");
