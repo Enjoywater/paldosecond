@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import DropDownMenu from "./Components/DropDownMenu";
 import { FaAngleDown } from "react-icons/fa";
 import { AiOutlineUser, AiOutlineShoppingCart } from "react-icons/ai";
-import { GiWineGlass, GiMoneyStack, GiCheeseWedge, GiGrapes } from "react-icons/gi";
+import {
+  GiWineGlass,
+  GiMoneyStack,
+  GiCheeseWedge,
+  GiGrapes,
+} from "react-icons/gi";
 import { GrLocation } from "react-icons/gr";
+import SignUpModal from "../../Pages/Signup/SignUpModal";
+import { withRouter } from "react-router-dom";
 
-const Nav = () => {
+const Nav = ({ history }) => {
   const [mainCategory, setCategory] = useState([]);
   const [hoverOn, handleHover] = useState(false);
   const [navCountry, getCountry] = useState([]);
   const [navLang, getLang] = useState([]);
   const [displayLang, animateLang] = useState(false);
   const [displayCountry, animateCountry] = useState(false);
+  const [displayCart, animateCart] = useState(false);
   const [navIndex, setIndex] = useState(0);
+  const [displayModal, switchModal] = useState(false);
 
   useEffect(() => {
     fetch("/Data/nav_mock.json")
@@ -30,19 +39,47 @@ const Nav = () => {
     setIndex(idx);
   };
 
+  const validToken = localStorage.token;
+
   const toggleCountry = () => {
-      return [animateCountry(!displayCountry), animateLang(false)]
+    return [
+      animateCountry(!displayCountry),
+      animateLang(false),
+      animateCart(false),
+    ];
   };
 
   const toggleLang = () => {
-    return [animateLang(!displayLang), animateCountry(false)]
+    return [
+      animateLang(!displayLang),
+      animateCountry(false),
+      animateCart(false),
+    ];
   };
+
+  const toggleCart = () => {
+    validToken && history.push("/cart");
+    return [
+      animateCart(!displayCart),
+      animateLang(false),
+      animateCountry(false),
+    ];
+  };
+
+  const toggleUser = () => [
+    switchModal(!displayModal),
+    animateLang(false),
+    animateCart(false),
+    animateCountry(false),
+    validToken && history.push("/mypage"),
+  ];
 
   return (
     <Navigation>
+      {/* {console.log(localStorage.token)} */}
       <NavUpper>
         <LeftSideWrap>
-          <Logo />
+          <Logo onClick={() => (window.location.href = "/")} />
           <Search>
             <SearchBar placeholder="Search any wine" autocomplete="off" />
           </Search>
@@ -54,15 +91,13 @@ const Nav = () => {
               France
             </TextWrapper>
             <FaAngleDown color="#BEBFBF" size="13px" />
-            {
-              <DropCountry animate={displayCountry}>
-                <ul>
-                  {navCountry?.map((country) => {
-                    return <li>{country}</li>;
-                  })}
-                </ul>
-              </DropCountry>
-            }
+            <DropCountry animate={displayCountry}>
+              <ul>
+                {navCountry?.map((country, idx) => {
+                  return <li key={idx}>{country}</li>;
+                })}
+              </ul>
+            </DropCountry>
           </MenuWrapper>
           <MenuWrapper onClick={toggleLang}>
             <TextWrapper>
@@ -70,39 +105,55 @@ const Nav = () => {
               English
             </TextWrapper>
             <FaAngleDown color="#BEBFBF" size="13px" />
-            {
-              <DropLang animate={displayLang}>
-                <ul>
-                  {navLang?.map((lang) => {
-                    return <li>{lang}</li>;
-                  })}
-                </ul>
-              </DropLang>
-            }
+            <DropLang animate={displayLang}>
+              <ul>
+                {navLang?.map((lang, idx) => {
+                  return <li key={idx}>{lang}</li>;
+                })}
+              </ul>
+            </DropLang>
           </MenuWrapper>
-          <div>
+          <User onClick={toggleUser}>
             <AiOutlineUser style={iconStyle("27px", "27px", "7px")} />
-          </div>
-          <div>
+          </User>
+          {!validToken && (
+            <SignUpModal
+              displayModal={displayModal}
+              closable={true}
+              maskClosable={true}
+              onClose={toggleUser}
+            >
+              Hello
+            </SignUpModal>
+          )}
+
+          <Cart onClick={toggleCart}>
             <AiOutlineShoppingCart style={iconStyle("27px", "27px", "7px")} />
-          </div>
+            {!validToken && (
+              <DropCart animate={displayCart}>
+                <div>You have no shipping carts</div>
+                <span>Explore</span>
+              </DropCart>
+            )}
+          </Cart>
         </RightSideWrap>
       </NavUpper>
       <NavLower>
         <CategoryWrap>
           <Category>
             {mainCategory.map((category, idx) => (
-                <li
-                  key={category.id}
-                  onMouseEnter={() => dropMenu(idx)}
-                  onMouseLeave={() => handleHover(false)}
-                  >
-                  {MainIcons[idx]}
-                  {category.category}
-                  {hoverOn && navIndex === idx && (
-                    <DropDownMenu category={category} />
-                  )}
-                </li>
+              <li
+                key={category.id}
+                onMouseEnter={() => dropMenu(idx)}
+                onMouseLeave={() => handleHover(false)}
+                onClick={() => history.push("/list")}
+              >
+                {MainIcons[idx]}
+                {category.category}
+                {hoverOn && navIndex === idx && (
+                  <DropDownMenu category={category} />
+                )}
+              </li>
             ))}
           </Category>
         </CategoryWrap>
@@ -111,7 +162,7 @@ const Nav = () => {
   );
 };
 
-export default Nav;
+export default withRouter(Nav);
 
 const iconStyle = (height, width, marginRight) => {
   return {
@@ -157,6 +208,7 @@ const Logo = styled.span`
   background: url("/images/textlogo.png") no-repeat center;
   background-size: cover;
   margin-right: 15px;
+  cursor: pointer;
 `;
 
 const Search = styled.form`
@@ -217,14 +269,13 @@ const DropCountry = styled.div`
   margin-top: 16px;
   box-shadow: 0 6px 20px 6px rgba(50, 50, 50, 0.15);
   border-radius: 4px;
-  z-index: 10000;
+  z-index: 10;
   background-color: #fff;
-  opacity: ${({animate}) => animate ? 1 : 0};
-  pointer-events: ${({animate}) => animate ? "initial" : "none"};
-  transform: translateY(${({animate}) => animate ? 0 : '20px'});
+  opacity: ${({ animate }) => (animate ? 1 : 0)};
+  pointer-events: ${({ animate }) => (animate ? "initial" : "none")};
+  transform: translateY(${({ animate }) => (animate ? 0 : "20px")});
   transition: all 0.25s ease-in;
 
-  
   li {
     padding: 8px;
     color: #333;
@@ -240,6 +291,41 @@ const DropCountry = styled.div`
 
 const DropLang = styled(DropCountry)`
   right: 2px;
+`;
+
+const User = styled.div`
+  cursor: pointer;
+`;
+
+const Cart = styled.div`
+  position: relative;
+  cursor: pointer;
+`;
+
+const DropCart = styled(DropLang)`
+  ${({ theme }) => theme.flex("center", "center", "column")}
+  div {
+    display: inline-block;
+    width: 150px;
+    font-size: 13px;
+    font-weight: 400;
+    text-align: center;
+    border-bottom: 1px solid #e4e4e4;
+    padding-bottom: 16px;
+    margin-bottom: 8px;
+    color: #111;
+  }
+  span {
+    width: 100%;
+    padding: 8px;
+    color: #ba1628;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    :hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 const NavLower = styled.div`
@@ -263,6 +349,11 @@ const Category = styled.ul`
     position: relative;
     height: 100%;
     margin-right: 16px;
+
+    :hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
 
     ${({ theme }) => theme.flex("flex-start", "center", "row")}
   }
