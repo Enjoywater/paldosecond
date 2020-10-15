@@ -25,10 +25,9 @@
           { "id": 6, "name": "Southern Rhône White" }
         ],
         [
-          { "id": 1, "name": "Sparkling", "style": true },
+          { "id": 1, "name": "Soju", "style": true },
           { "id": 2, "name": "Rosé", "style": true },
-          { "id": 3, "name": "Fortified", "style": true },
-          { "id": 4, "name": "Dessert", "style": true }
+          { "id": 3, "name": "Cognac", "style": true }
         ]
       ],
       "banner": [

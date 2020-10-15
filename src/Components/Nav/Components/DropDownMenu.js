@@ -1,11 +1,28 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { BiUpArrow } from "react-icons/bi";
-import { GiCow, GiSheep, GiGoat, GiPig, GiRam, GiChicken, GiMushrooms, GiMeat, GiCheeseWedge, GiNoodles, GiChiliPepper, GiAlmond, GiFriedFish, GiSalmon, GiSwirledShell, GiFruitTree } from "react-icons/gi";
+import {
+  GiCow,
+  GiSheep,
+  GiGoat,
+  GiPig,
+  GiRam,
+  GiChicken,
+  GiMushrooms,
+  GiMeat,
+  GiCheeseWedge,
+  GiNoodles,
+  GiChiliPepper,
+  GiAlmond,
+  GiFriedFish,
+  GiSalmon,
+  GiSwirledShell,
+  GiFruitTree,
+} from "react-icons/gi";
 import { FaCocktail, FaCheese } from "react-icons/fa";
+import { withRouter } from "react-router-dom";
 
-
-function DropDownMenu({ category }) {
+function DropDownMenu({ category, history }) {
   return (
     <DropDownWrap>
       <BiUpArrow
@@ -18,15 +35,18 @@ function DropDownMenu({ category }) {
         }}
       />
       <DropBodyWrap>
-        {category.subcategory?.map((sub) => {
-          
+        {category.subcategory?.map((sub, idx) => {
           return (
-            <DropBody>
+            <DropBody key={idx}>
               <ul>
                 {sub?.map((subsub) => {
                   const { id, style, icon, name } = subsub;
                   return (
-                    <li key={id} style={style && styles}>
+                    <li
+                      key={id}
+                      style={style && styles}
+                      onClick={() => history.push("/list")}
+                    >
                       {icon && SubIcons[id - 1]}
                       {name}
                     </li>
@@ -56,7 +76,7 @@ function DropDownMenu({ category }) {
   );
 }
 
-export default DropDownMenu;
+export default withRouter(DropDownMenu);
 
 const iconStyle = {
   width: "28px",
@@ -102,7 +122,6 @@ const DropDownWrap = styled.div`
   background-color: #fff;
   box-shadow: 0 6px 20px 6px rgba(50, 50, 50, 0.15);
   z-index: 10000;
-
 `;
 
 const DropBodyWrap = styled.div`
