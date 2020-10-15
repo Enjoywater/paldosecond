@@ -4,6 +4,7 @@ import { Btn } from "../../../Components/tool/tool";
 import { RiShoppingCart2Line } from "react-icons/ri";
 import { FiTruck } from "react-icons/fi";
 import { BiStore } from "react-icons/bi";
+import { api } from "../../../config/api";
 
 const PurchaseBox = ({ detail }) => {
   const [quantity, setQuantity] = useState(6);
@@ -23,7 +24,7 @@ const PurchaseBox = ({ detail }) => {
   };
 
   const AddToCart = () => {
-    fetch(`http://10.58.3.209:8000/orders/carts`, {
+    fetch(`${api}/orders/carts`, {
       method: "POST",
       headers: {
         Authorization:

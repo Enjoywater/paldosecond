@@ -16,6 +16,7 @@ import {
   RiLoaderLine,
 } from "react-icons/ri";
 import { BsStarFill } from "react-icons/bs";
+import { api } from "../../config/api";
 
 const Detail = ({ match }) => {
   const [detail, setDetail] = useState({});
@@ -39,23 +40,24 @@ const Detail = ({ match }) => {
       [menu]: true,
     });
   };
-
-  const getDetailInfo = () => {
-    fetch("/Data/detailData/detailData.json")
-      .then((res) => res.json())
-      .then((res) => setDetail(res.product));
-  };
   const num = match.params.id ? match.params.id : 60;
 
   // const getDetailInfo = () => {
-  //   fetch(`http://13.209.10.86:8000/products/6`, {
-  //     headers: {
-  //       Authorization: localStorage.getItem("token"),
-  //     },
-  //   })
+  //   // fetch("/Data/detailData/detailData.json")
+  //   fetch(`${api}/products/${num}`)
   //     .then((res) => res.json())
   //     .then((res) => setDetail(res.product));
   // };
+
+  const getDetailInfo = () => {
+    fetch(`${api}/products/${num}`, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => setDetail(res.product));
+  };
 
   const getReviewData = () => {
     fetch("/Data/detailData/reviewData.json")
