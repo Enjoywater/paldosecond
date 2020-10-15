@@ -1,63 +1,122 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled, { css } from "styled-components";
 import Sorting from "./Components/Sorting";
 import ProductCard from "./Components/ProductCard";
-import { SORTBOX_LIST } from "./textConstant";
+import {
+  COUNTRY,
+  RATING,
+  RATING_BOOL,
+  REGION,
+  SORTBOX_ITEM,
+  STYLES,
+  WINE_TYPES,
+} from "./textConstant";
+import { selectedBtn, selectedSortItem } from "./utils";
+import { api } from "../../config/api";
 
 const List = () => {
   const [display, setDisplay] = useState(false);
   const [products, setProducts] = useState([]);
+
+  const [typeList, setTypeList] = useState(WINE_TYPES);
+  const [regionList, setRegionList] = useState(REGION);
+  const [countryList, setCountryList] = useState(COUNTRY);
+  const [styleList, setStyleList] = useState(STYLES);
+
+  const [bgBool, setBgBool] = useState(RATING_BOOL);
+
   const [sortTitle, setSortTitle] = useState("Highest User Rating");
-  const [fetchStr, setFetchStr] = useState("price");
+  const [fetchStr, setFetchStr] = useState("-average_score");
+  const [subFetchStr, setSubFetchStr] = useState("");
+
+  const [rangeMin, setRangeMin] = useState(300);
+  const [rangeMax, setRangeMax] = useState(1500);
+
+  const handleTitle = useCallback(
+    (state) => {
+      let keys = selectedSortItem(state);
+      return state === typeList ? keys.join(", ") : keys.join();
+    },
+    [typeList]
+  );
+
+  const handleSubFetchStr = useCallback(() => {
+    const selectedStr = {
+      type: selectedSortItem(typeList),
+      region: selectedSortItem(regionList),
+      country: selectedSortItem(countryList),
+      style: selectedSortItem(styleList),
+    };
+
+    const strSum = (arr, str) => arr.map((item) => `&${str}=${item}`).join("");
+
+    const strList = [
+      selectedStr.type.length ? strSum(selectedStr.type, "type") : "",
+      selectedStr.region.length ? strSum(selectedStr.region, "region") : "",
+      selectedStr.country.length ? strSum(selectedStr.country, "country") : "",
+      selectedStr.style.length ? strSum(selectedStr.style, "style") : "",
+    ];
+    return strList.join("");
+  }, [countryList, regionList, styleList, typeList]);
+
+  const handleApi = useCallback(() => {
+    const mainFetch = fetchStr;
+    const backgroundFetch = bgBool;
+    const subFetch = subFetchStr;
+    const priceMin = rangeMin;
+    const priceMax = rangeMax;
+
+    const abc = `${api}/products?order=${mainFetch}&rating=${
+      RATING[handleTitle(backgroundFetch)]
+    }${subFetch}&price_low=${priceMin}&price_high=${
+      priceMax === 2300 ? 99999 : priceMax
+    }`;
+    return abc;
+  }, [bgBool, fetchStr, handleTitle, rangeMax, rangeMin, subFetchStr]);
 
   useEffect(() => {
-    fetch(`http://10.58.0.59:8000/products?order=${fetchStr}`)
-      .then((res) => res.json())
-      .then((result) => setProducts(result.products));
-  }, [fetchStr]);
+    (async () => {
+      const response = await fetch(`${handleApi()}`);
+      const result = await response.json();
 
-  const sortFetch = (list) => {
-    let resultStr;
-    switch (list) {
-      case "Highest User Rating":
-        resultStr = "total_rating";
-        break;
-      case "Price: Low to High":
-        resultStr = "price";
-        break;
-      case "Price: High to Low":
-        resultStr = "-price";
-        break;
-      case "Popular":
-        resultStr = "average_score";
-        break;
-      default:
-        resultStr = "total_rating";
-        break;
-    }
-    return setFetchStr(resultStr);
-  };
+      setProducts(result.products);
+    })();
+  }, [handleTitle, handleApi]);
+
+  useEffect(() => {
+    setSubFetchStr(handleSubFetchStr());
+  }, [typeList, regionList, countryList, styleList, handleSubFetchStr]);
 
   const handleSortList = (item) => {
-    sortFetch(item);
+    setFetchStr(SORTBOX_ITEM[item]);
     setSortTitle(item);
     setDisplay(!display);
   };
 
-  const { count, result } = products;
+  const { count = 0, result } = products;
 
   return (
     <Wrapper>
       <Container>
-        <Title>{`Showing ${count} wines between ${"_sorting price~price_"} rated above ${"_start raiting_"} stars`}</Title>
+        <Title>{`Showing ${count} ${handleTitle(
+          typeList
+        )} alcohols between €${rangeMin} ~ €${rangeMax} rated above ${
+          RATING[handleTitle(bgBool)]
+        } stars`}</Title>
         <SortContainer>
+          <SelectedBox>
+            {selectedBtn(typeList, setTypeList)}
+            {selectedBtn(regionList, setRegionList)}
+            {selectedBtn(countryList, setCountryList)}
+            {selectedBtn(styleList, setStyleList)}
+          </SelectedBox>
           <SortTitle onClick={() => setDisplay(!display)}>
             <SortText>Sort :</SortText>
             <SortText listItem>{sortTitle}</SortText>
             <SortText rotateOn>{`>`}</SortText>
           </SortTitle>
           <SortList displayOn={display}>
-            {SORTBOX_LIST.map((item, i) => (
+            {Object.keys(SORTBOX_ITEM).map((item, i) => (
               <li key={i} onClick={() => handleSortList(item)}>
                 {item}
               </li>
@@ -65,7 +124,22 @@ const List = () => {
           </SortList>
         </SortContainer>
         <ContentBox>
-          <Sorting />
+          <Sorting
+            typeList={typeList}
+            setTypeList={setTypeList}
+            bgBool={bgBool}
+            setBgBool={setBgBool}
+            regionList={regionList}
+            setRegionList={setRegionList}
+            countryList={countryList}
+            setCountryList={setCountryList}
+            styleList={styleList}
+            setStyleList={setStyleList}
+            rangeMin={rangeMin}
+            setRangeMin={setRangeMin}
+            rangeMax={rangeMax}
+            setRangeMax={setRangeMax}
+          />
           <CardBox>
             {result?.map((el) => (
               <ProductCard key={el.id} products={el} />
@@ -99,10 +173,15 @@ const Title = styled.h2`
 `;
 
 const SortContainer = styled.div`
-  ${({ theme }) => theme.flex("flex-end")};
-  height: 40px;
+  ${({ theme }) => theme.flex("space-between")};
+  height: auto;
   margin-top: 16px;
   position: relative;
+`;
+
+const SelectedBox = styled.div`
+  overflow-wrap: break-word;
+  max-width: 1000px;
 `;
 
 const sortStyle = () => css`
@@ -117,7 +196,7 @@ const sortStyle = () => css`
 const SortTitle = styled.div`
   ${sortStyle}
   ${({ theme }) => theme.flex("space-around", "center")};
-  height: 100%;
+  height: 40px;
   cursor: pointer;
 `;
 
@@ -135,6 +214,7 @@ const SortList = styled.ul`
   padding: 20px 16px;
   position: absolute;
   top: 50px;
+  right: 0;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   li {
     display: flex;

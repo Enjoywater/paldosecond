@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { starRating } from "../../../Components/tool/tool";
 
@@ -9,23 +9,52 @@ const VintageRow = ({
   detail,
   vintageSort,
 }) => {
-  const { vintages } = detail;
-  console.log(vintageSort);
+  const { feature } = detail;
+  const [filterData, setFilterData] = useState([]);
+  const [filter, setFilter] = useState("");
+
+  useEffect(() => {
+    fetch("/Data/detailData/detailData.json")
+      .then((res) => res.json())
+      .then((res) => setFilterData(res.product.vintages));
+  }, []);
+
+  useEffect(() => {
+    if (vintageSort === "Most popular") {
+      setFilterData(filterData.sort((a, b) => b.rating - a.rating));
+      setFilter(vintageSort);
+    } else if (vintageSort === "Year") {
+      setFilterData(filterData.sort((a, b) => b.year - a.year));
+      setFilter(vintageSort);
+    } else if (vintageSort === "Lowest price first") {
+      setFilterData(filterData.sort((a, b) => a.price - b.price));
+      setFilter(vintageSort);
+    } else if (vintageSort === "Highest price first") {
+      setFilterData(filterData.sort((a, b) => b.price - a.price));
+      setFilter(vintageSort);
+    } else if (vintageSort === "Highest user rating") {
+      setFilterData(filterData.sort((a, b) => b.ratings - a.ratings));
+      setFilter(vintageSort);
+    }
+  }, [filterData, vintageSort]);
+
   return (
     <Container>
       <VintageList>
-        {vintages.map((vintage, i) => (
+        {filterData?.map((vintage, i) => (
           <Row key={i}>
             <Year>{vintage.year}</Year>
-            <Feature>
-              {vintage.feature
-                ? (
-                    <Icon iconName={iconName} bgColor={handleIcon()}>
-                      {iconList[handleIcon()]}
-                    </Icon>
-                  ) && <p>{vintage.feature}</p>
-                : null}
-            </Feature>
+            {feature ? (
+              <Feature>
+                {vintage.feature
+                  ? (
+                      <Icon iconName={iconName} bgColor={handleIcon()}>
+                        {iconList[handleIcon()]}
+                      </Icon>
+                    ) && <p>{vintage.feature}</p>
+                  : null}
+              </Feature>
+            ) : null}
             <Rating>
               <Average>{Number(vintage.rating).toFixed(1)}</Average>
               <StarBox>{starRating(Number(vintage.rating).toFixed(1))}</StarBox>

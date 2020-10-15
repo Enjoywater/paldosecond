@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { withRouter } from "react-router-dom";
 import {
   RiVipCrown2Line,
   RiSeedlingLine,
@@ -10,13 +11,12 @@ import {
 import { FLAG, ICON_NAME } from "../textConstant";
 import { Btn, starRating } from "../../../Components/tool/tool";
 
-const ProductCard = ({ products }) => {
+const ProductCard = ({ products, history }) => {
   const {
     feature,
     id,
     image_url,
     nation,
-    percentage,
     price,
     rating,
     ratings,
@@ -24,38 +24,27 @@ const ProductCard = ({ products }) => {
     wine_name,
     winery,
     year,
+    type,
   } = products;
 
-  const iconFunc = (letter) => {
-    let result;
-    switch (letter) {
-      case "e":
-        result = <RiVipCrown2Line size="20" color="white" />;
-        break;
-      case "p":
-        result = <RiSeedlingLine size="20" color="white" />;
-        break;
-      case "t":
-        result = <RiThumbUpLine size="20" color="white" />;
-        break;
-      case "i":
-        result = <RiMusic2Line size="20" color="white" />;
-        break;
-      case "o":
-        result = <RiMoneyEuroCircleLine size="20" color="white" />;
-        break;
-      default:
-        break;
-    }
-    return result;
+  const iconList = {
+    "top rated": <RiVipCrown2Line size="20" color="white" />,
+    vintage: <RiSeedlingLine size="20" color="white" />,
+    "Great value": <RiThumbUpLine size="20" color="white" />,
+    Popular: <RiMusic2Line size="20" color="white" />,
+    "top 1%": <RiMoneyEuroCircleLine size="20" color="white" />,
+  };
+
+  const handleIcon = () => {
+    return Object.keys(iconList).filter((item) => feature.indexOf(item) !== -1);
   };
 
   return (
     <>
       {Object.keys(products).length > 0 && (
         <Container>
-          <ImgBox>
-            <ProducImg src={image_url} />
+          <ImgBox type={type} onClick={() => history.push(`/detail/${id}`)}>
+            <ProducImg image_url={image_url} />
           </ImgBox>
           <InfoBox feature={feature}>
             <div>
@@ -84,7 +73,7 @@ const ProductCard = ({ products }) => {
           <OptionalBox>
             <FeatureBox>
               {feature && (
-                <Icon bgColor={feature[2]}>{iconFunc(feature[2])}</Icon>
+                <Icon bgColor={handleIcon()}>{iconList[handleIcon()]}</Icon>
               )}
               <DivText as="div" small>
                 {feature}
@@ -97,7 +86,15 @@ const ProductCard = ({ products }) => {
   );
 };
 
-export default ProductCard;
+export default withRouter(ProductCard);
+
+const TYPES_BG = {
+  Cognac: "#FEC9C9",
+  Soju: "#F3F3F3",
+  Red: "#A3CFDA",
+  White: "#ECF2DF",
+  Rosé: "#D99E91",
+};
 
 const BuyingBtn = styled(Btn)`
   width: 120px;
@@ -127,13 +124,14 @@ const ImgBox = styled.div`
   width: 160px;
   height: 210px;
   border-radius: 6px;
-  background-color: #ffecbf;
+  /* background-color: #ffecbf; */
+  background-color: ${({ type }) => `${TYPES_BG[type]}`};
 `;
 
 const ProducImg = styled.div`
   width: 50px;
   height: 178px;
-  background-image: url("http://images.vivino.com/thumbs/1QoFUeYqQaCU07v4MBx8yw_pb_x300.png");
+  background-image: url(${({ image_url }) => image_url});
   background-size: cover;
 `;
 

@@ -4,7 +4,7 @@ import PurchaseBox from "./PurchaseBox";
 import { starRating } from "../../../Components/tool/tool";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 
-const Top = ({ detail, flag, iconName, iconList }) => {
+const Top = ({ detail, flag, iconName, iconList, setDetail }) => {
   const {
     winery,
     year,
@@ -16,9 +16,20 @@ const Top = ({ detail, flag, iconName, iconList }) => {
     ratings,
     editor_note,
     feature,
+    wishlist,
+    image_url,
   } = detail;
 
-  const [checked, setChecked] = useState(false);
+  const handleWishlist = () => {
+    setDetail({ ...detail, wishlist: !detail.wishlist });
+    fetch(`http://13.209.10.86:8000/accounts/wishlist/${detail.id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization:
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyfQ.Qq0oXYANstjhyDGnyKR658yxUNeE4R36ERuodLf0aMk",
+      },
+    });
+  };
 
   const handleIcon = () => {
     return Object.keys(iconList).filter((item) => feature.indexOf(item) !== -1);
@@ -29,7 +40,7 @@ const Top = ({ detail, flag, iconName, iconList }) => {
       {Object.keys(detail).length > 0 && (
         <TopRow>
           <ProductDetail>
-            <Img alt="wine" src="/Images/wineBottle.png" />
+            <Img alt="wine" src={image_url} />
             <Table>
               <Title>
                 <p>{winery}</p>
@@ -53,8 +64,8 @@ const Top = ({ detail, flag, iconName, iconList }) => {
                   <StarBox>{starRating(Number(rating).toFixed(1))}</StarBox>
                   {ratings}rating
                 </StarRating>
-                <Wishlist onClick={() => setChecked(!checked)}>
-                  {checked ? (
+                <Wishlist onClick={handleWishlist}>
+                  {wishlist ? (
                     <MdBookmark
                       style={{
                         width: "24px",
@@ -70,24 +81,29 @@ const Top = ({ detail, flag, iconName, iconList }) => {
                     />
                   )}
                   <WishTitle>
-                    {checked ? "Wishlisted" : "Add to Wishlist"}
+                    {wishlist ? "Wishlisted" : "Add to Wishlist"}
                   </WishTitle>
                 </Wishlist>
               </RateWishlist>
-              <EditorNote>
-                <p>
-                  <b>Editor's note:</b>
-                  {editor_note}
-                </p>
-                <a href="#editorNote">Read full Editor's note</a>
-              </EditorNote>
+
+              {editor_note ? (
+                <EditorNote>
+                  <p>
+                    <b>Editor's note:</b>
+                    {editor_note}
+                  </p>
+                  <a href="#editorNote">Read full Editor's note</a>
+                </EditorNote>
+              ) : null}
               <FeatureBox>
-                <Feature>
-                  <Icon iconName={iconName} bgColor={handleIcon()}>
-                    {iconList[handleIcon()]}
-                  </Icon>
-                  <p>{feature}</p>
-                </Feature>
+                {feature ? (
+                  <Feature>
+                    <Icon iconName={iconName} bgColor={handleIcon()}>
+                      {iconList[handleIcon()]}
+                    </Icon>
+                    <p>{feature}</p>
+                  </Feature>
+                ) : null}
               </FeatureBox>
             </Table>
             <PurchaseBox detail={detail} />

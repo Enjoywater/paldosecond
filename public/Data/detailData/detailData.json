@@ -1,11 +1,12 @@
 {
   "product": {
     "id": 1,
-    "image_url": "https://assets.sainsburys-groceries.co.uk/gol/8008354/1/640x640.jpg",
+    "image_url": "https://images.vivino.com/thumbs/4tudsFSDR7iInPSSKNdXew_pb_x600.png",
     "type": "Red",
     "winery": "Capdevielle",
     "wine_name": "Ch\u00e2teau La Chapelle-Lescours Saint-\u00c9milion Grand Cru",
     "year": 2015,
+    "wishlist": true,
     "nation": "France",
     "region": "Libournais",
     "rating": 3.978494623655914,

@@ -1,45 +1,54 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { ItemBox, TitleBox, Title } from "../styles";
-import { GRAPES, REGION, COUNTRY, STYLES } from "../textConstant";
-import { btnRender } from "../utils";
+import { selectedBtn, unSelectedBtn } from "../utils";
 
-const SearchSorting = () => {
-  const [grapeList, setGrapeList] = useState(GRAPES);
-  const [region, setRegionList] = useState(REGION);
-  const [countryList, setCountryList] = useState(STYLES);
-  const [stylesList, setStylesList] = useState(COUNTRY);
-
-  const typeRender = (title, state, setState) => (
-    <>
-      <ItemBox>
-        <TitleBox>
-          <Title>{title}</Title>
-        </TitleBox>
-        <TypeBox>{btnRender(state, setState)}</TypeBox>
-      </ItemBox>
-      <ItemBox></ItemBox>
-    </>
-  );
-
+const SearchSorting = ({
+  countryList,
+  setCountryList,
+  regionList,
+  setRegionList,
+  styleList,
+  setStyleList,
+}) => {
+  const renderComponents = {
+    COUNTRY: [countryList, setCountryList],
+    REGION: [regionList, setRegionList],
+    STYLES: [styleList, setStyleList],
+  };
+  const renderKeys = Object.keys(renderComponents);
+  const renderVals = Object.values(renderComponents);
   return (
-    <div>
-      {typeRender("GRAPES", grapeList, setGrapeList)}
-      {typeRender("REGION", region, setRegionList)}
-      {typeRender("STYLES", countryList, setCountryList)}
-      {typeRender("COUNTRY", stylesList, setStylesList)}
-    </div>
+    <>
+      {renderKeys.map((key, i) => (
+        <TypeRender
+          key={i}
+          title={key}
+          state={renderVals[i][0]}
+          setState={renderVals[i][1]}
+        />
+      ))}
+    </>
   );
 };
 
 export default SearchSorting;
 
+const TypeRender = ({ title, state, setState }) => (
+  <ItemBox>
+    <TitleBox>
+      <Title>{title}</Title>
+    </TitleBox>
+    <TypeBox>
+      {selectedBtn(state, setState)}
+      {unSelectedBtn(state, setState)}
+    </TypeBox>
+  </ItemBox>
+);
+
 const TypeBox = styled.div`
-  ${({ theme }) => theme.flex("space-between")};
-  flex-wrap: wrap;
   width: 400px;
   height: 136px;
+  padding-top: 10px;
   overflow: scroll;
-  /* max-width: 400px; */
-  /* height: 140px; */
 `;

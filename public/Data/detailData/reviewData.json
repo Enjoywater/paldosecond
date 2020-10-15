@@ -1,14 +1,14 @@
 {
   "reviewData": [
     {
-      "id": "1",
-      "rating": "5",
+      "id": 1,
+      "rating": 5,
       "src": "https://images.vivino.com/avatars/default_user.png",
       "userName": "Chritian Bale",
       "reviewDate": "18 Jun 2020",
       "reviewNote": "🍾 having the honor to try out a first wine from the new owners of this chateau 🍇 70% grenache, 15% shiraz, 15% rolle 🔍 Completely organic, fermentation at 16°C 👀 pale/medium salmon 👃🏼 minerals chamomile lavender orange blossom 👅 strawberry raspberry minerals peach camomile butter ❤️ 9,5/10. I 💯 like this! Intense nose, long aftertaste. Everything works very well together. Interesting that 👃🏼 is different from 👅 ❗️If too warm > sticks to palate: caramel (🙁). If too cold > 👃🏼 is gone",
-      "thumbsUp": "27",
-      "chat": "5"
+      "thumbsUp": 27,
+      "chat": 5
     },
     {
       "id": "2",

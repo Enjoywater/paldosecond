@@ -22,6 +22,20 @@ const PurchaseBox = ({ detail }) => {
     return 250 - quantity * 1 * (price * 1);
   };
 
+  const AddToCart = () => {
+    fetch(`http://10.58.3.209:8000/orders/carts`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyfQ.Qq0oXYANstjhyDGnyKR658yxUNeE4R36ERuodLf0aMk",
+      },
+      body: JSON.stringify({
+        vintage_id: detail.id,
+        quantity: quantity,
+      }),
+    });
+  };
+
   return (
     <>
       {Object.keys(detail) && (
@@ -65,7 +79,7 @@ const PurchaseBox = ({ detail }) => {
                 +
               </PlusMinusButton>
             </SelectQuantity>
-            <CartButton>Add to cart</CartButton>
+            <CartButton onClick={AddToCart}>Add to cart</CartButton>
           </Purchase>
           <Policies>
             <Policy>

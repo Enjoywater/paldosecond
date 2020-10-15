@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 
 const TasteCharacteristics = ({ detail }) => {
-  // const { taste_summary, bold, sweet, acidic } = Object.keys(detail) && detail;
   const { taste_summary, bold, sweet, acidic } = detail;
   return (
     <Container>
@@ -44,10 +43,11 @@ export default TasteCharacteristics;
 
 const Container = styled.div`
   margin: 0 auto;
+  padding-top: 112px;
   width: 1216px;
 `;
 const Title = styled.div`
-  margin: 20px 0;
+  margin: 0px 0px 24px;
   font-size: 28px;
   font-weight: bold;
 `;

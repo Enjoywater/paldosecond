@@ -1,15 +1,29 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
+import { Range } from "rc-slider";
 import SearchSorting from "./SearchSorting";
-import { USER_RATING, WINE_TYPES, RATING_BOOL } from "../textConstant";
+import { RATING } from "../textConstant";
 import { ItemBox, TitleBox, Title, TypeBtn } from "../styles";
 import { starRating } from "../../../Components/tool/tool";
 import { handlePlace } from "../utils";
+import "rc-slider/assets/index.css";
 
-const Sorting = () => {
-  const [typeList, setTypeList] = useState(WINE_TYPES);
-  const [bgBool, setBgBool] = useState(RATING_BOOL);
-
+const Sorting = ({
+  typeList,
+  setTypeList,
+  bgBool,
+  setBgBool,
+  regionList,
+  setRegionList,
+  countryList,
+  setCountryList,
+  styleList,
+  setStyleList,
+  rangeMin,
+  setRangeMin,
+  rangeMax,
+  setRangeMax,
+}) => {
   const handleChecked = (key) => {
     setBgBool({
       "Rare & extraordinary": false,
@@ -20,6 +34,8 @@ const Sorting = () => {
     });
   };
 
+  const RATING_KEYS = Object.keys(RATING);
+  const RATING_VALS = Object.values(RATING);
   return (
     <div>
       <ItemBox>
@@ -47,12 +63,19 @@ const Sorting = () => {
           <Title>Price Range</Title>
         </TitleBox>
         <Price>
-          <Text>0</Text>
-          <Text>500</Text>
+          <Text>{`€ ${rangeMin}`}</Text>
+          <Text>{`€ ${
+            rangeMax === 2300 ? `${rangeMax} +` : `${rangeMax}`
+          }`}</Text>
         </Price>
         <RangeBox>
-          <Range topBar />
-          <Range />
+          <Range
+            {...slideSetting}
+            onAfterChange={(e) => {
+              setRangeMin(e[0]);
+              setRangeMax(e[1]);
+            }}
+          />
         </RangeBox>
       </ItemBox>
       <ItemBox>
@@ -60,28 +83,60 @@ const Sorting = () => {
           <Title>Vivino User Rating</Title>
         </TitleBox>
         <StarList>
-          {USER_RATING.map(({ number, text }, i) => (
-            <li key={i}>
-              <CheckContainer>
-                <CheckCircle
-                  type="checkbox"
-                  bgColor={bgBool[text]}
-                  onClick={() => handleChecked(text)}
-                />
-              </CheckContainer>
-              <StarBox>{starRating(number)}</StarBox>
-              <StarText bold>{number.toFixed(1)}</StarText>
-              <StarText>{text}</StarText>
-            </li>
-          ))}
+          {Array(4)
+            .fill(2)
+            .map((item, i) => (
+              <li key={i}>
+                <CheckContainer onClick={() => handleChecked(RATING_KEYS[i])}>
+                  <CheckCircle
+                    type="checkbox"
+                    bgColor={bgBool[RATING_KEYS[i]]}
+                  />
+                </CheckContainer>
+                <StarBox>{starRating(RATING_VALS[i])}</StarBox>
+                <StarText bold>{RATING_VALS[i].toFixed(1)}</StarText>
+                <StarText>{RATING_KEYS[i]}</StarText>
+              </li>
+            ))}
         </StarList>
       </ItemBox>
-      <SearchSorting />
+      <SearchSorting
+        regionList={regionList}
+        setRegionList={setRegionList}
+        countryList={countryList}
+        setCountryList={setCountryList}
+        styleList={styleList}
+        setStyleList={setStyleList}
+      />
     </div>
   );
 };
 
 export default Sorting;
+
+const slideSetting = {
+  defaultValue: [300, 1500],
+  min: 0,
+  max: 2300,
+  railStyle: {
+    backgroundColor: "#E9E9E9",
+  },
+  trackStyle: [
+    {
+      backgroundColor: "#BB1629",
+    },
+  ],
+  handleStyle: [
+    {
+      backgroundColor: "#bb1629",
+      border: "1px solid white",
+    },
+    {
+      backgroundColor: "#bb1629",
+      border: "1px solid white",
+    },
+  ],
+};
 
 const Text = styled.span`
   font-size: 13px;
@@ -99,20 +154,10 @@ const Price = styled.div`
 `;
 
 const RangeBox = styled.div`
+  display: flex;
+  align-items: center;
+  height: 20px;
   position: relative;
-`;
-
-const Range = styled.input.attrs(() => ({
-  type: "range",
-  step: 1,
-  min: 0,
-  max: 500,
-}))`
-  width: 100%;
-  border-radius: 1px;
-  box-shadow: none;
-  border: 0;
-  outline: none;
 `;
 
 const StarList = styled.ul`

@@ -6,22 +6,23 @@ const Editor = ({ detail, title }) => {
 
   return (
     <>
-      {Object.keys(detail).length > 0 && (
-        <Container>
-          <EditorNote id="editorNote">
-            <p>EDITOR NOTE</p>
-            {editor_note}
-          </EditorNote>
-          {description?.map((text, i) => {
-            return (
-              <Propos key={i}>
-                <p>{title[i]}</p>
-                {text}
-              </Propos>
-            );
-          })}
-        </Container>
-      )}
+      {Object.keys(detail).length > 0 &&
+        (editor_note ? (
+          <Container>
+            <EditorNote id="editorNote">
+              <p>EDITOR NOTE</p>
+              {editor_note}
+            </EditorNote>
+            {description?.map((text, i) => {
+              return (
+                <Propos key={i}>
+                  <p>{title[i]}</p>
+                  {text}
+                </Propos>
+              );
+            })}
+          </Container>
+        ) : null)}
     </>
   );
 };

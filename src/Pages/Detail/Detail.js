@@ -12,12 +12,13 @@ import {
   RiThumbUpLine,
   RiMusic2Line,
   RiMoneyEuroCircleLine,
+  RiPercentLine,
+  RiLoaderLine,
 } from "react-icons/ri";
 import { BsStarFill } from "react-icons/bs";
 
-const Detail = () => {
+const Detail = ({ match }) => {
   const [detail, setDetail] = useState({});
-  const [vintageSort, setVintageSort] = useState("Year");
 
   const [reviewList, setReviewList] = useState({});
 
@@ -39,34 +40,22 @@ const Detail = () => {
     });
   };
 
-  const [showMenu, setShowMenu] = useState(true);
-
-  const handleMenu = () => {
-    setShowMenu(!showMenu);
-  };
-
-  const [clicked, setClicked] = useState(false);
-
-  const [thumbIndex, setThumbIndex] = useState(0);
-  useEffect(() => {
-    getDetailInfo();
-  }, []);
-
   const getDetailInfo = () => {
     fetch("/Data/detailData/detailData.json")
       .then((res) => res.json())
       .then((res) => setDetail(res.product));
   };
+  const num = match.params.id ? match.params.id : 60;
 
   // const getDetailInfo = () => {
-  //   fetch("http://10.58.7.104:8000/products/1")
+  //   fetch(`http://13.209.10.86:8000/products/6`, {
+  //     headers: {
+  //       Authorization: localStorage.getItem("token"),
+  //     },
+  //   })
   //     .then((res) => res.json())
   //     .then((res) => setDetail(res.product));
   // };
-
-  useEffect(() => {
-    getReviewData();
-  }, []);
 
   const getReviewData = () => {
     fetch("/Data/detailData/reviewData.json")
@@ -74,16 +63,29 @@ const Detail = () => {
       .then((res) => setReviewList(res.reviewData));
   };
 
+  useEffect(() => {
+    getReviewData();
+  }, []);
+
+  useEffect(() => {
+    getDetailInfo();
+  }, []);
+
   return (
     <div style={{ backgroundColor: "#FAFAFA" }}>
       <Top
         detail={detail}
+        setDetail={setDetail}
         flag={FLAG}
         iconName={ICON_NAME}
         iconList={iconList}
       />
       <Editor detail={detail} title={TITLE} />
-      <Highlights detail={detail} />
+      <Highlights
+        detail={detail}
+        HighligtColor={HighligtColor}
+        highlightList={highlightList}
+      />
       <TasteCharacteristics detail={detail} />
       <Review
         detail={detail}
@@ -92,10 +94,6 @@ const Detail = () => {
         setReviewMenu={setReviewMenu}
         handleBorder={handleBorder}
         stars={STARS}
-        clicked={clicked}
-        setClicked={setClicked}
-        thumbIndex={thumbIndex}
-        setThumbIndex={setThumbIndex}
         setReviewList={setReviewList}
       />
       <Vintage
@@ -104,8 +102,6 @@ const Detail = () => {
         iconList={iconList}
         iconName={ICON_NAME}
         stars={STARS}
-        vintageSort={vintageSort}
-        setVintageSort={setVintageSort}
       />
       <Facts detail={detail} />
     </div>
@@ -136,6 +132,26 @@ const iconList = {
   "Great value": <RiThumbUpLine size="20" color="white" />,
   Popular: <RiMusic2Line size="20" color="white" />,
   "top 1%": <RiMoneyEuroCircleLine size="20" color="white" />,
+};
+
+const HighligtColor = {
+  money: "#F35A5A",
+  available: "#F35AB4",
+  traditional: "#5A88F3",
+  rates: "#3DDCA9",
+  top: "#7CCA2F",
+  discounted: "#2fbdca",
+  clear: "#ca2fc7",
+};
+
+const highlightList = {
+  top: <RiVipCrown2Line size="20" color="white" />,
+  available: <RiSeedlingLine size="20" color="white" />,
+  traditional: <RiMusic2Line size="20" color="white" />,
+  rates: <RiThumbUpLine size="20" color="white" />,
+  money: <RiMoneyEuroCircleLine size="20" color="white" />,
+  discounted: <RiPercentLine size="20" color="white" />,
+  clear: <RiLoaderLine size="20" color="white" />,
 };
 
 const TITLE = [

@@ -8,10 +8,10 @@ export const handlePlace = (title, state, setState) => {
   });
 };
 
-export const btnRender = (state, setState) => (
+export const selectedBtn = (state, setState) => (
   <>
     {Object.keys(state)
-      .filter((key) => state[key] !== false)
+      .filter((key) => state[key])
       .map((item, i) => (
         <TypeBtn
           key={i}
@@ -21,6 +21,11 @@ export const btnRender = (state, setState) => (
           {item}
         </TypeBtn>
       ))}
+  </>
+);
+
+export const unSelectedBtn = (state, setState) => (
+  <>
     {Object.keys(state)
       .filter((key) => state[key] === false)
       .map((item, i) => (
@@ -34,3 +39,6 @@ export const btnRender = (state, setState) => (
       ))}
   </>
 );
+
+export const selectedSortItem = (state) =>
+  Object.keys(state).filter((item) => state[item]);

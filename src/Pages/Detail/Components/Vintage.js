@@ -1,27 +1,21 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React, { useState, useEffect } from "react";
+import styled, { css } from "styled-components";
 import VintageModal from "./VintageModal";
-import VintageDropdown from "./VintageDropdown";
 import VintageRow from "./VintageRow";
 import { starRating } from "../../../Components/tool/tool";
 
-const Vintage = ({
-  detail,
-  iconList,
-  iconName,
-  stars,
-  filters,
-  vintageSort,
-  setVintageSort,
-  setDetail,
-}) => {
+const Vintage = ({ detail, iconList, iconName, stars, filters, setDetail }) => {
   const { feature, vintages } = detail;
+
+  const [vintageSort, setVintageSort] = useState("Year");
+  const [vintageValue, setVintageValue] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [sortedVintage, setSortedVintage] = useState([]);
+  const [display, setDisplay] = useState(false);
 
   const handleIcon = () => {
     return Object.keys(iconList).filter((item) => feature.indexOf(item) !== -1);
   };
-
-  const [modalVisible, setModalVisible] = useState(false);
 
   const openModal = () => {
     setModalVisible(true);
@@ -29,6 +23,12 @@ const Vintage = ({
 
   const closeModal = () => {
     setModalVisible(false);
+  };
+
+  const handleSortList = (option) => {
+    setVintageSort(option.label);
+    setDisplay(!display);
+    setVintageValue(option.value);
   };
 
   return (
@@ -40,36 +40,46 @@ const Vintage = ({
             Which Gérard Bertrand Domaine de L'Aigle Chardonnay Limoux vintage
             is the best to drink now?
           </SubTitle>
+
           <DropDown>
-            <VintageDropdown
-              filters={filters}
-              vintageSort={vintageSort}
-              setVintageSort={setVintageSort}
-              detail={detail}
-              setDetail={setDetail}
-            />
+            <SortContainer>
+              <SortTitle onClick={() => setDisplay(!display)}>
+                <SortText listItem>{vintageSort}</SortText>
+                <SortText rotateOn>{`>`}</SortText>
+              </SortTitle>
+              <SortList displayOn={display}>
+                {options?.map((option, i) => (
+                  <li key={i} onClick={() => handleSortList(option)}>
+                    {option.label}
+                  </li>
+                ))}
+              </SortList>
+            </SortContainer>
           </DropDown>
+
           <VintageRow
             detail={detail}
             iconName={iconName}
             iconList={iconList}
             handleIcon={handleIcon}
             vintageSort={vintageSort}
+            display={display}
           />
-
           <ShowButton onClick={openModal}>Show All</ShowButton>
-          {
-            <VintageModal
-              detail={detail}
-              iconName={iconName}
-              iconList={iconList}
-              handleIcon={handleIcon}
-              visible={modalVisible}
-              onClose={closeModal}
-              stars={stars}
-              filters={filters}
-            />
-          }
+          <VintageModal
+            detail={detail}
+            iconName={iconName}
+            iconList={iconList}
+            handleIcon={handleIcon}
+            visible={modalVisible}
+            onClose={closeModal}
+            vintageSort={vintageSort}
+            handleSortList={handleSortList}
+            options={options}
+            setDisplay={setDisplay}
+            display={display}
+            sortedVintage={sortedVintage}
+          />
         </Container>
       )}
     </>
@@ -80,10 +90,11 @@ export default Vintage;
 
 const Container = styled.div`
   margin: 0 auto;
+  padding-top: 112px;
   width: 1216px;
 `;
 const Title = styled.div`
-  margin: 20px 0;
+  margin: 0px 0px 24px;
   font-size: 28px;
   font-weight: bold;
 `;
@@ -98,75 +109,6 @@ const DropDown = styled.div`
   position: relative;
 `;
 
-// const FilterBox = styled.div`
-//   display: flex;
-//   align-items: center;
-//   cursor: pointer;
-//   font-size: 14px;
-//   padding: 0 8px;
-//   border: 1px solid #eae0da;
-//   border-radius: 4px;
-//   background-color: #fff;
-//   color: #484848;
-// `;
-
-const Filter = styled.span`
-  max-width: 235px;
-  overflow: hidden;
-`;
-
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid #dedede;
-  justify-content: space-around;
-`;
-
-const Year = styled.div`
-  font-size: 20px;
-`;
-
-const Rating = styled.div`
-  display: flex;
-`;
-
-const StarBox = styled.div``;
-
-const Average = styled.div`
-  font-size: 16px;
-  margin-right: 5px;
-`;
-const Purchase = styled.div`
-  font-size: 14px;
-`;
-const Price = styled.div`
-  font-size: 16px;
-`;
-
-const Feature = styled.span`
-  ${({ theme }) => theme.flex(null, "center")}
-  /* margin: 20px 16px; */
-  padding-right: 16px;
-  height: 30px;
-  border-radius: 44px;
-  background-color: white;
-  p {
-    margin-left: 10px;
-    line-height: 38px;
-    font-size: 13px;
-  }
-`;
-
-const Icon = styled.span`
-  ${({ theme }) => theme.flex("center", "center")}
-  width: 24px;
-  height: 24px;
-  margin-left: 5px;
-  border-radius: 16px;
-  background-color: ${({ bgColor, iconName }) => iconName[bgColor]};
-`;
-
 const ShowButton = styled.button`
   display: inline-block;
   margin: 24px 0;
@@ -174,10 +116,60 @@ const ShowButton = styled.button`
   font-size: 16px;
 `;
 
+const SortContainer = styled.div`
+  display: flex;
+  height: 40px;
+  margin-top: 16px;
+  position: relative;
+`;
+
+const sortStyle = () => css`
+  width: 200px;
+  font-size: 14px;
+  color: #484848;
+  background-color: #ffffff;
+  border: 1px solid #e4e4e4;
+  border-radius: 4px;
+`;
+
+const SortTitle = styled.div`
+  ${sortStyle}
+  ${({ theme }) => theme.flex("space-around", "center")};
+  height: 100%;
+  cursor: pointer;
+`;
+
+const SortText = styled.span`
+  display: inline-block;
+  width: ${({ listItem }) => listItem && "123px"};
+  transform: ${({ rotateOn }) => (rotateOn ? "rotate(90deg)" : "")};
+`;
+
+const SortList = styled.ul`
+  ${sortStyle}
+  display: ${({ displayOn }) => (displayOn ? "flex" : "none")};
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 16px;
+  position: absolute;
+  top: 50px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  li {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    cursor: pointer;
+
+    :hover {
+      background-color: #f3f3f3;
+    }
+  }
+`;
+
 const options = [
-  { value: "year", label: "Year" },
-  { value: "mostPopular", label: "Most popular" },
-  { value: "highestUserRating", label: "Highest user rating" },
-  { value: "lowestPriceFirst", label: "Lowest price first" },
-  { value: "highestPriceFirst", label: "Highest price first" },
+  { label: "Year", value: "year" },
+  { label: "Most popular", value: "popular" },
+  { label: "Highest user rating", value: "highRating" },
+  { label: "Lowest price first", value: "lowPrice" },
+  { label: "Highest price first", value: "highPrice" },
 ];

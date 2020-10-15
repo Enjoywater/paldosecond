@@ -18,13 +18,16 @@ export const Title = styled.h2`
 `;
 
 export const TypeBtn = styled(Btn)`
-  width: 120px;
+  display: ${({ fixWidth }) => (fixWidth ? "flex" : "inline-block")};
+  width: ${({ fixWidth }) => (fixWidth ? "120px" : "")};
   height: 34px;
   background-color: ${({ clicked }) => (clicked ? "#ba1628" : "white")};
   color: ${({ clicked }) => (clicked ? "white" : "#ba1628")};
   border: 1px solid #ba1628;
   font-size: 13px;
   font-weight: 300;
+  padding: ${({ fixWidth }) => (fixWidth ? "" : "0 20px")};
+  margin: ${({ fixWidth }) => (fixWidth ? "" : "0 6px 8px")};
 
   :hover {
     background-color: ${({ clicked }) => (clicked ? "#A22330" : "#fafafa")};

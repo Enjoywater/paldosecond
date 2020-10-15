@@ -2,21 +2,11 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { starRating } from "../../../Components/tool/tool";
 import { RiThumbUpLine, RiThumbUpFill, RiChat3Line } from "react-icons/ri";
-
-const ReviewCard = ({ reviewList, reviewMenu, handleBorder }) => {
-  const {
-    src,
-    rating,
-    userName,
-    reviewDate,
-    reviewNote,
-    thumbsUp,
-    chat,
-  } = reviewList;
-
+import { BsStarFill } from "react-icons/bs";
+const ReviewCard = ({ reviewMenu, handleBorder, review, stars }) => {
   const [clicked, setClicked] = useState(false);
 
-  const handleThumbsup = () => {
+  const handleClick = () => {
     setClicked(!clicked);
   };
 
@@ -26,32 +16,35 @@ const ReviewCard = ({ reviewList, reviewMenu, handleBorder }) => {
         <CardList>
           <Card>
             <ReviewInfo>
-              <UserImg src={src} />
+              <UserImg src={review.src} />
               <RatingInfo>
-                <StarBox>{(starRating(rating), "#F0A300")}</StarBox>
-                <UserName>{userName}</UserName>
-                <ReviewDate>{reviewDate}</ReviewDate>
+                <StarBox>
+                  {starRating(Number(review.rating), "#f1a90d")}
+                </StarBox>
+
+                <UserName>{review.userName}</UserName>
+                <ReviewDate>{review.reviewDate}</ReviewDate>
               </RatingInfo>
             </ReviewInfo>
             <ReviewNote>
-              <p>{reviewNote}</p>
+              <p>{review.reviewNote}</p>
             </ReviewNote>
-            <Icons onClick={handleThumbsup}>
+            <Icons>
               <Thumbsup>
                 {!clicked ? (
-                  <div>
+                  <div onClick={() => handleClick()}>
                     <RiThumbUpLine style={{ marginRight: "4px" }} />
-                    {thumbsUp}
+                    {review.thumbsUp}
                   </div>
                 ) : (
-                  <div>
+                  <div onClick={() => handleClick()}>
                     <RiThumbUpFill style={{ marginRight: "4px" }} />
-                    {Number(thumbsUp) + 1}
+                    {Number(review.thumbsUp) + 1}
                   </div>
                 )}
               </Thumbsup>
               <RiChat3Line style={{ marginRight: "4px" }} />
-              {chat}
+              {review.chat}
             </Icons>
           </Card>
         </CardList>
@@ -70,8 +63,7 @@ const ReviewRating = styled.div`
 `;
 
 const CardList = styled.div`
-  width: 75%;
-  padding: 0 16px;
+  width: 100%;
 `;
 
 const Card = styled.div`

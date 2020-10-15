@@ -6,6 +6,13 @@ export const SORTBOX_LIST = [
   "Popular",
 ];
 
+export const SORTBOX_ITEM = {
+  "Highest User Rating": "-average_score",
+  "Price: Low to High": "price",
+  "Price: High to Low": "-price",
+  Popular: "-total_rating",
+};
+
 export const WINE_TYPES = {
   Cognac: false,
   Soju: false,
@@ -14,53 +21,18 @@ export const WINE_TYPES = {
   Rosé: false,
 };
 
-export const USER_RATING = [
-  {
-    number: 4.5,
-    text: "Rare & extraordinary",
-  },
-  {
-    number: 4.0,
-    text: "Very good stuff",
-  },
-  {
-    number: 3.5,
-    text: "Good stuff",
-  },
-  {
-    number: 3.0,
-    text: "Average",
-  },
-];
+export const RATING = {
+  "Rare & extraordinary": 4.5,
+  "Very good stuff": 4.0,
+  "Good stuff": 3.5,
+  Average: 3.0,
+};
 
 export const RATING_BOOL = {
   "Rare & extraordinary": false,
   "Very good stuff": false,
   "Good stuff": true,
   Average: false,
-};
-
-export const GRAPES = {
-  Malbec: false,
-  Nebbiolo: false,
-  "Sauvignon Blanc": false,
-  "Ugni Blanc": false,
-  Barbera: false,
-  Chardonnay: false,
-  Pugnitello: false,
-  "Cabernet Sauvignon": false,
-  Grenache: false,
-  "Cabernet Franc": false,
-  Merlot: false,
-  Groppello: false,
-  "Folld Blanche": false,
-  Vermentino: false,
-  Garnacha: false,
-  "-": false,
-  Tempranillo: false,
-  Sangiovese: false,
-  Marzemino: false,
-  "Shiraz/Syrah": false,
 };
 
 export const REGION = {
@@ -122,9 +94,9 @@ export const FLAG = {
 };
 
 export const ICON_NAME = {
-  e: "#F35A5A",
-  p: "#F35AB4",
-  t: "#5A88F3",
-  i: "#3DDCA9",
-  o: "#7CCA2F",
+  "top rated": "#F35A5A",
+  vintage: "#F35AB4",
+  "Great value": "#5A88F3",
+  Popular: "#3DDCA9",
+  "top 1%": "#7CCA2F",
 };

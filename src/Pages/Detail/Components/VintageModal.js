@@ -1,21 +1,22 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
-import VintageDropdown from "./VintageDropdown";
+import styled, { css } from "styled-components";
 import VintageRow from "./VintageRow";
 import { CgClose } from "react-icons/cg";
-import { starRating } from "../../../Components/tool/tool";
-import { RiThumbUpLine, RiThumbUpFill, RiChat3Line } from "react-icons/ri";
 
 const VintageModal = ({
   visible,
   onClose,
-  stars,
   detail,
   iconName,
   iconList,
   handleIcon,
-  filters,
+  vintageSort,
+  display,
+  options,
+  handleSortList,
+  setDisplay,
+  sortedVintage,
 }) => {
   const onMaskClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -38,18 +39,37 @@ const VintageModal = ({
             <Title>Compare Vintages</Title>
             <CgClose onClick={close} style={iconStyle} />
           </Header>
-          <VintageDropdown filters={filters} />
+          <DropDown>
+            <SortContainer>
+              <SortTitle onClick={() => setDisplay(!display)}>
+                <SortText listItem>{vintageSort}</SortText>
+                <SortText rotateOn>{`>`}</SortText>
+              </SortTitle>
+              <SortList displayOn={display}>
+                {options?.map((option, i) => (
+                  <li key={i} onClick={() => handleSortList(option)}>
+                    {option.label}
+                  </li>
+                ))}
+              </SortList>
+            </SortContainer>
+          </DropDown>
           <VintageRow
             detail={detail}
             iconName={iconName}
             iconList={iconList}
             handleIcon={handleIcon}
+            vintageSort={vintageSort}
+            sortedVintage={sortedVintage}
+            display={display}
           />
         </ModalInner>
       </ModalWrapper>
     </>
   );
 };
+
+export default VintageModal;
 
 VintageModal.propTypes = {
   visible: PropTypes.bool,
@@ -73,7 +93,6 @@ const ModalWrapper = styled.div`
   transform: translateY(${({ visible }) => (visible ? "0" : "700px")});
   opacity: ${({ visible }) => (visible ? 1 : 0)};
   transition: all 0.25s ease-in;
-  /* display: ${(props) => (props.visible ? "block" : "none")}; */
   position: fixed;
   top: 0;
   right: 0;
@@ -90,8 +109,7 @@ const ModalInner = styled.div`
   box-shadow: 0 0 6px #ebebeb;
   background-color: white;
   border-radius: 10px;
-  width: 60%;
-  /* max-width: 1000px; */
+  width: 70%;
   top: 50%;
   transform: translateY(-50%);
   margin: 0 auto;
@@ -112,6 +130,9 @@ const Title = styled.h2`
   font-weight: bold;
 `;
 
+const DropDown = styled.div`
+  position: relative;
+`;
 const iconStyle = {
   position: "absolute",
   width: "24px",
@@ -119,4 +140,60 @@ const iconStyle = {
   right: "0",
 };
 
-export default VintageModal;
+const SortContainer = styled.div`
+  display: flex;
+  height: 40px;
+  margin-top: 16px;
+  position: relative;
+`;
+
+const sortStyle = () => css`
+  width: 200px;
+  font-size: 14px;
+  color: #484848;
+  background-color: #ffffff;
+  border: 1px solid #e4e4e4;
+  border-radius: 4px;
+`;
+
+const SortTitle = styled.div`
+  ${sortStyle}
+  ${({ theme }) => theme.flex("space-around", "center")};
+  height: 100%;
+  cursor: pointer;
+`;
+
+const SortText = styled.span`
+  display: inline-block;
+  width: ${({ listItem }) => listItem && "123px"};
+  transform: ${({ rotateOn }) => (rotateOn ? "rotate(90deg)" : "")};
+`;
+
+const SortList = styled.ul`
+  ${sortStyle}
+  display: ${({ displayOn }) => (displayOn ? "flex" : "none")};
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 16px;
+  position: absolute;
+  top: 50px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  li {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    cursor: pointer;
+
+    :hover {
+      background-color: #f3f3f3;
+    }
+  }
+`;
+
+const options = [
+  { label: "Year", value: "year" },
+  { label: "Most popular", value: "popular" },
+  { label: "Highest user rating", value: "highRating" },
+  { label: "Lowest price first", value: "lowPrice" },
+  { label: "Highest price first", value: "highPrice" },
+];

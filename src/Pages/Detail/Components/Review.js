@@ -3,7 +3,6 @@ import styled from "styled-components";
 import ReviewModal from "./ReviewModal";
 import ReviewCard from "./ReviewCard";
 import { starRating } from "../../../Components/tool/tool";
-import { RiThumbUpLine, RiThumbUpFill, RiChat3Line } from "react-icons/ri";
 
 const Review = ({
   reviewMenu,
@@ -11,8 +10,6 @@ const Review = ({
   detail,
   stars,
   reviewList,
-  clicked,
-  setClicked,
   setThumbIndex,
   setReviewList,
 }) => {
@@ -28,12 +25,9 @@ const Review = ({
     setModalVisible(false);
   };
 
-  const handleClick = (e, i) => {
-    const review = [...reviewList];
-    console.log("r", reviewList[i].id);
-    const na = reviewList.find((item) => Number(item.id) === i + 1);
-    const naIdx = reviewList.findIndex((item) => Number(item.id) === i + 1);
+  const [clicked, setClicked] = useState(false);
 
+  const handleClick = () => {
     setClicked(!clicked);
   };
 
@@ -42,7 +36,7 @@ const Review = ({
       {Object.keys(detail).length > 0 && (
         <Container>
           <Title>Community reviews</Title>
-          <Menu>
+          {/* <Menu>
             <ul>
               {Object.keys(reviewMenu).map((menu, i) => (
                 <ReviewList
@@ -54,45 +48,22 @@ const Review = ({
                 </ReviewList>
               ))}
             </ul>
-          </Menu>
+          </Menu> */}
           <ReviewRating>
             <CardList>
               {reviewList.length > 0 &&
                 reviewList.map((review, i) => {
                   if (review.id < 4) {
                     return (
-                      <Card>
-                        <ReviewInfo>
-                          <UserImg src={review.src} />
-                          <RatingInfo>
-                            <StarBox>
-                              {starRating(review.rating, "#F0A300")}
-                            </StarBox>
-                            <UserName>{review.userName}</UserName>
-                            <ReviewDate>{review.reviewDate}</ReviewDate>
-                          </RatingInfo>
-                        </ReviewInfo>
-                        <ReviewNote>
-                          <p>{review.reviewNote}</p>
-                        </ReviewNote>
-                        <Icons>
-                          <Thumbsup>
-                            {!clicked ? (
-                              <div onClick={(e) => handleClick(e, i)} id={i}>
-                                <RiThumbUpLine style={{ marginRight: "4px" }} />
-                                {review.thumbsUp}
-                              </div>
-                            ) : (
-                              <div onClick={(e) => handleClick(e, i)} id={i}>
-                                <RiThumbUpFill style={{ marginRight: "4px" }} />
-                                {Number(review.thumbsUp) + 1}
-                              </div>
-                            )}
-                          </Thumbsup>
-                          <RiChat3Line style={{ marginRight: "4px" }} />
-                          {review.chat}
-                        </Icons>
-                      </Card>
+                      <div key={i}>
+                        <ReviewCard
+                          clicked={clicked}
+                          setClicked={setClicked}
+                          handleClick={handleClick}
+                          review={review}
+                          stars={stars}
+                        />
+                      </div>
                     );
                   }
                 })}
@@ -110,7 +81,9 @@ const Review = ({
                 <RatingsFilter key={num}>
                   <RatingFilter>{stars(num)}</RatingFilter>
                   <Bar>
-                    <RatingBar width={score[i]} />
+                    <RatingBar
+                      width={`${(Number(score[i]) / Number(ratings)) * 100}%`}
+                    />
                   </Bar>
                   <Ratings></Ratings>
                   <Counter>{score[i]}</Counter>
@@ -127,6 +100,9 @@ const Review = ({
               handleBorder={handleBorder}
               reviewList={reviewList}
               reviewMenu={reviewMenu}
+              clicked={clicked}
+              setClicked={setClicked}
+              handleClick={handleClick}
             />
           }
         </Container>
@@ -138,11 +114,12 @@ export default Review;
 
 const Container = styled.div`
   margin: 0 auto;
+  padding-top: 112px;
   width: 1216px;
 `;
 
 const Title = styled.div`
-  margin: 20px 0;
+  margin: 0px 0px 24px;
   font-size: 28px;
   font-weight: bold;
 `;

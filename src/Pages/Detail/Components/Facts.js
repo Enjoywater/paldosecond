@@ -41,8 +41,8 @@ const Facts = ({ detail }) => {
         </Icon>
         <HeaderLabel>Wine style</HeaderLabel>
         <Fact>
-          {region}
-          {type}
+          <span>{region}</span>
+          <span>{type}</span>
         </Fact>
       </Row>
       <Row>
@@ -64,11 +64,13 @@ const Facts = ({ detail }) => {
 };
 const Container = styled.div`
   ${({ theme }) => theme.flex("center", null, "column")}
-  margin: 60px auto;
+  margin: 0 auto;
+  padding: 112px 0 50px 0;
+
   width: 1216px;
 `;
 const Title = styled.div`
-  margin-right: 100px;
+  margin: 0px 0px 24px;
   font-size: 28px;
   font-weight: bold;
 `;
@@ -102,6 +104,9 @@ const Fact = styled.div`
   text-align: left;
   font-size: 16px;
   font-weight: 4px;
+  span {
+    margin-right: 5px;
+  }
 `;
 
 export default Facts;

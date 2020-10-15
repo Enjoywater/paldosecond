@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import ReviewCard from "./ReviewCard";
 import { CgClose } from "react-icons/cg";
-import { starRating } from "../../../Components/tool/tool";
-import { RiThumbUpLine, RiThumbUpFill, RiChat3Line } from "react-icons/ri";
 
 const ReviewModal = ({
   visible,
@@ -14,6 +13,7 @@ const ReviewModal = ({
   reviewList,
   clicked,
   setClicked,
+  handleClick,
 }) => {
   const onMaskClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -27,12 +27,7 @@ const ReviewModal = ({
     }
   };
 
-  // const clickThumbsup = (e) => {
-  //   // setClicked(!clicked);
-  //   // setThumbIndex(e.target.i);
-  //   console.log("e.target", e.target);
-  //   console.log("thumb", thumbIndex);
-  // };
+  const [filterStar, setFilterStar] = useState([]);
 
   return (
     <>
@@ -45,13 +40,13 @@ const ReviewModal = ({
           </Header>
           <Filter>
             {[5, 4, 3, 2, 1].map((num, i) => (
-              <RatingsFilter key={i}>
+              <RatingsFilter key={i} co>
                 <RatingFilter noWidth>{stars(num)}</RatingFilter>
                 <Counter>{num}</Counter>
               </RatingsFilter>
             ))}
           </Filter>
-          <Menu>
+          {/* <Menu>
             <ul>
               {Object.keys(reviewMenu).map((menu, i) => (
                 <ReviewList
@@ -63,43 +58,23 @@ const ReviewModal = ({
                 </ReviewList>
               ))}
             </ul>
-          </Menu>
+          </Menu> */}
           <Reviews>
             <CardList>
               {reviewList.length > 0 &&
-                reviewList.map(
-                  (
-                    {
-                      src,
-                      userName,
-                      reviewDate,
-                      reviewNote,
-                      thumbsUp,
-                      chat,
-                      rating,
-                    },
-                    i
-                  ) => (
-                    <ReviewCard key={i}>
-                      <ReviewInfo>
-                        <UserImg src={src} />
-                        <RatingInfo>
-                          <StarBox>{starRating(rating, "#F0A300")}</StarBox>
-                          <UserName>{userName}</UserName>
-                          <ReviewDate>{reviewDate}</ReviewDate>
-                        </RatingInfo>
-                      </ReviewInfo>
-                      <ReviewNote>
-                        <p>{reviewNote}</p>
-                      </ReviewNote>
-                      <Icons>
-                        <RiThumbUpLine />
-                        {thumbsUp}
-                        <RiChat3Line /> {chat}
-                      </Icons>
-                    </ReviewCard>
-                  )
-                )}
+                reviewList.map((review, i) => {
+                  return (
+                    <>
+                      <ReviewCard
+                        key={i}
+                        clicked={clicked}
+                        setClicked={setClicked}
+                        handleClick={handleClick}
+                        review={review}
+                      />
+                    </>
+                  );
+                })}
             </CardList>
           </Reviews>
         </ModalInner>
@@ -130,7 +105,6 @@ const ModalWrapper = styled.div`
   transform: translateY(${({ visible }) => (visible ? "0" : "700px")});
   opacity: ${({ visible }) => (visible ? 1 : 0)};
   transition: all 0.25s ease-in;
-  /* display: ${(props) => (props.visible ? "block" : "none")}; */
   position: fixed;
   top: 0;
   right: 0;
@@ -172,7 +146,6 @@ const Title = styled.h2`
 
 const Menu = styled.div`
   list-style: none;
-  /* margin: 15px 0; */
   background-color: #fff;
   padding: 0 20px;
 `;
@@ -203,7 +176,6 @@ const RatingsFilter = styled.div`
 
 const RatingFilter = styled.div`
   display: flex;
-  /* margin-right: 5px; */
   width: ${({ noWidth }) => (noWidth ? "" : "80px")};
 `;
 
@@ -215,16 +187,6 @@ const Counter = styled.div`
 const CardList = styled.div`
   width: 100%;
   padding: 0 16px;
-`;
-
-const ReviewCard = styled.div`
-  ${({ theme }) => theme.flex("center", null, "column")}
-  margin-top: 15px;
-  padding: 24px 20px 8px;
-  width: 100%;
-  background-color: white;
-  box-shadow: 0 0 6px #ebebeb;
-  border-radius: 10px;
 `;
 
 const ReviewInfo = styled.div`
