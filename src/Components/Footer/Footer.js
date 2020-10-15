@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import STATIC from "../Nav/static";
 
 const Footer = () => {
@@ -12,10 +12,9 @@ const Footer = () => {
               Trusted by millions to discover and buy the right wine every time.
             </p>
             <IconWrap>
-              {STATIC.FOOTER_DESCRIPTION.map((el,idx) => (
-              
+              {STATIC.FOOTER_DESCRIPTION.map((el, idx) => (
                 <IconBox>
-                  <img alt={el.alt} src={el.src} />
+                  <img alt={el.alt} src={el.src} key={idx} />
                   <IconText>{el.text}</IconText>
                 </IconBox>
               ))}
@@ -31,8 +30,8 @@ const Footer = () => {
               </Download>
               <Payment>
                 <PayWrap>
-                  {STATIC.PAYMENT.map((el,idx) => (
-                    <img alt={el.alt} src={el.src} key={idx}/>
+                  {STATIC.PAYMENT.map((el, idx) => (
+                    <img alt={el.alt} src={el.src} key={idx} />
                   ))}
                 </PayWrap>
                 <PayText>Payment options will vary by merchant</PayText>
@@ -72,13 +71,6 @@ const Footer = () => {
 };
 
 export default Footer;
-
-const flexBox = (direction, justify, align) => css`
-  display: flex;
-  flex-direction: ${direction};
-  justify-content: ${justify};
-  align-items: ${align};
-`;
 
 const FooterBody = styled.footer`
   display: fixed;

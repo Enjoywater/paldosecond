@@ -1,81 +1,96 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Btn } from "../tool/tool";
-import {starRating} from "../tool/tool"
+import { withRouter } from "react-router-dom";
+import { starRating } from "../tool/tool";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import Counter from "./Components/Counter";
 
-const Slider = ({products}) => {
-  const [x, setX] = useState(0);
-  const [count, setCount] = useState(6);
-  const [index, setIndex] = useState(0);
-  
-  const goLeft = () => {
-    console.log(x);
-    x === 0 ? setX(-535 * (products.length - 1)) : setX(x + 535);
+const Slider = ({ products, x, setX, title, history }) => {
+  // const [productLength, changeLength] = useState(products.length);
+  const slideLength = 534;
+  const goRight = (titleName) => {
+    // x[titleName] === 0
+    //   ? setX({ ...x, [titleName]: -107 * (products.length - 1) })
+    // : setX({ ...x, [titleName]: x[titleName] + 535 });
+    setX({ ...x, [titleName]: x[titleName] - slideLength });
+    // setX({ ...x, [titleName]: x[titleName] + 107 * productLength });
   };
 
-  const goRight = () => {
-    console.log(x);
-    x === -535 * (products.length - 1) ? setX(0) : setX(x - 535);
+  const goLeft = (titleName) => {
+    // x[titleName] === -535 * (products.length - 1)
+    //   ?
+    // : setX({ ...x, [titleName]: x[titleName] - 535 });
+    setX({ ...x, [titleName]: x[titleName] + slideLength });
+    //   setX({ ...x, [titleName]: x[titleName] - 107 * productLength });
+    // }
   };
 
   return (
     <RelativeWrap>
+      {/* {console.log(productLength)} */}
       <SliderWrap>
-        {products.map((product, index) => {
-          const {rating, ratings, wine_name, image_url, winery, region, nation, price} = product;
-          return <Slide key={index} style={{transform: `translateX(${x}%)`}}>
-            <SlideTop>
-              <TopLeft>
-                <Score>
-                  {rating.toFixed(1)}
-                </Score>
-                <Star>
-                  {starRating(rating)}
-                </Star>
-                <RatingCtn>
-                  {ratings} ratings
-                </RatingCtn>
-              </TopLeft>
-              <TopRight>
-                <WineImg alt={wine_name} src={image_url}></WineImg>
-              </TopRight>
-            </SlideTop>
-            <SlideMid>
-              <TitleWrap>
-                <Winery>{winery}</Winery>
-                <WineName>
-                {wine_name}
-                </WineName>
-              </TitleWrap>
-              <DescriptionWrap>
-                <Flag><img alt="" src="#"></img></Flag>
-                <WineType>Rosé wine </WineType>
-                from
-                <Region> {region}</Region> - 
-                <Country>{nation}</Country>
-              </DescriptionWrap>
-            </SlideMid>
-            <SlideBottom>
-              <Price>€{Number(price).toLocaleString()}</Price>
-              <CounterWrap>
-                <Counter>
-                  <Minus onClick={()=>setCount(count - 1)}>-</Minus>
-                  <Count>{count}</Count>
-                  <Plus onClick={()=>setCount(count + 1)}>+</Plus>
-                </Counter>
-                <AddCartBtn/>
-              </CounterWrap>
-            </SlideBottom>
-          </Slide>;
+        {products?.map((product, idx) => {
+          const {
+            id,
+            rating,
+            ratings,
+            wine_name,
+            image_url,
+            winery,
+            region,
+            nation,
+            price,
+          } = product;
+          return (
+            <Slide key={idx} style={{ transform: `translateX(${x[title]}%)` }}>
+              <SlideTop>
+                <TopLeft>
+                  <Score>{rating.toFixed(1)}</Score>
+                  <Star>{starRating(rating)}</Star>
+                  <RatingCtn>{ratings} ratings</RatingCtn>
+                </TopLeft>
+                <TopRight>
+                  <WineImg
+                    onClick={() => history.push(`/detail/${id}`)}
+                    alt={wine_name}
+                    src={image_url}
+                  ></WineImg>
+                </TopRight>
+              </SlideTop>
+              <SlideMid>
+                <TitleWrap>
+                  <Winery>{winery}</Winery>
+                  <WineName>{wine_name}</WineName>
+                </TitleWrap>
+                <DescriptionWrap>
+                  <Flag>
+                    <img alt="" src="#"></img>
+                  </Flag>
+                  <WineType>Rosé wine </WineType>
+                  from
+                  <Region> {region}</Region> -<Country>{nation}</Country>
+                </DescriptionWrap>
+              </SlideMid>
+              <Counter price={price} product={product} idx={idx} />
+            </Slide>
+          );
         })}
-        {x === 0 || <ButtonLeft onClick={goLeft}>left</ButtonLeft>}
-        {x === -1070 || <ButtonRight onClick={goRight}>right</ButtonRight>}
+        {x[title] === 0 || (
+          <ButtonLeft onClick={() => goLeft(title)}>
+            <IoIosArrowBack size="23px" opacity="0.3" />
+          </ButtonLeft>
+        )}
+        {x[title] < products.length * -107 || (
+          <ButtonRight onClick={() => goRight(title)}>
+            <IoIosArrowForward size="23px" opacity="0.3" />
+          </ButtonRight>
+        )}
       </SliderWrap>
     </RelativeWrap>
   );
 };
 
-export default Slider;
+export default withRouter(Slider);
 
 const RelativeWrap = styled.main`
   position: relative;
@@ -92,12 +107,12 @@ const SliderWrap = styled.div`
 const Slide = styled.div`
   min-width: 19%;
   width: 100%;
-  height: 100%; 
-  transition: .5s;
+  height: 100%;
+  transition: 0.5s;
   border-radius: 4px;
   margin-right: 16px;
-  background-color:#fafafa;
-  ${({theme}) => theme.flex("flex-start", "center", "column")}
+  background-color: #fafafa;
+  ${({ theme }) => theme.flex("flex-start", "center", "column")}
 `;
 
 const SlideTop = styled.div`
@@ -106,14 +121,14 @@ const SlideTop = styled.div`
   flex: 1;
   padding: 0 24px;
   background-color: #f7f3f0;
-  ${({theme})=>theme.flex("center", "center", "row")}
+  ${({ theme }) => theme.flex("center", "center", "row")}
 `;
 
 const TopLeft = styled.div`
   height: 100%;
   flex: 1;
-  ${({theme})=> theme.flex("center", "flex-start", "column")};
-  `;
+  ${({ theme }) => theme.flex("center", "flex-start", "column")};
+`;
 
 const Score = styled.div`
   font-size: 30px;
@@ -128,21 +143,18 @@ const Star = styled.div`
 `;
 
 const RatingCtn = styled.div`
-margin-top: 8px;
-font-size: 14px;
-font-weight: 300;
-color: #989999;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 300;
+  color: #989999;
 `;
 
 const TopRight = styled.div`
   height: 100%;
   flex: 1;
-  `;
+`;
 
-const WineImg = styled.div`
-  background: url("/images/testwine.png") no-repeat 100% 100%;
-  background-size: contain;
-  height: 100%;
+const WineImg = styled.img`
   margin-top: 16px;
 `;
 
@@ -159,13 +171,15 @@ const TitleWrap = styled.div``;
 const Winery = styled.div`
   font-size: 14px;
   font-weight: 400;
-  line-height: 1.5;`;
+  line-height: 1.5;
+`;
 
 const WineName = styled.div`
-    font-size: 14px;
-    font-weight: 900;
-    text-overflow: ellipsis;
-    overflow: hidden;`;
+  font-size: 14px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`;
 
 const DescriptionWrap = styled.div`
   margin-top: 8px;
@@ -173,10 +187,9 @@ const DescriptionWrap = styled.div`
   font-weight: 300;
 `;
 
-const Flag = styled.span`
-`;
+const Flag = styled.span``;
 
-const WineType= styled.span`
+const WineType = styled.span`
   font-size: 12px;
   font-weight: 300;
 `;
@@ -185,80 +198,7 @@ const Region = styled.span`
   font-size: 12px;
   font-weight: 400;
 `;
-const Country = styled.span`
-
-`;
-
-
-const SlideBottom = styled.div`
-  line-height: 100%;
-  padding: 16px;
-  height: 112px;
-  width: 100%;
-`;
-
-const Price = styled.div`
-  font-size: 20px;
-  line-height: normal;
-  font-weight: 900;
-  margin-top: 8px;
-`;
-
-const CounterWrap = styled.div`
-  margin-top: 8px;
-  ${({theme}) => theme.flex("space-between", "center", "row")}
-`;
-
-const Counter = styled.div`
-  border: solid 1px #e4e4e4;
-  flex-basis: 60%;
-  height: 40px;
-  font-size: 13px;
-  line-height: 1.53846;
-  color: #111;
-  border-radius: 4px;
-  ${({theme}) => theme.flex("center", "center", "row")}
-`;
-
-const Minus = styled.div`
-  font-size: 24px;
-  font-weight: 300;
-  max-width: 40px;
-  flex: 1;
-  text-align: center;
-  cursor: pointer;
-  border-right: solid 1px #e4e4e4;
-`;
-
-const Count = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  flex: 1;
-  text-align: center;
-`;
-
-const Plus = styled.div`
-  font-size: 24px;
-  font-weight: 300;
-  max-width: 40px;
-  flex: 1;
-  text-align: center;
-  cursor: pointer;
-  border-left: solid 1px #e4e4e4;
-`;
-
-const AddCartBtn = styled(Btn)`
-  width: 82px;
-  height: 40px;
-  background-color: #02a78b;
-  background-repeat: no-repeat;
-  background-position: center;
-  border: 1px solid #02a78b;
-  color: #ffffff;
-  background-image: url("/images/coin1.svg");
-  background-size: 20px 16px;
-  flex-basis: 30%;
-`;
+const Country = styled(Region)``;
 
 const ButtonLeft = styled.button`
   position: absolute;
@@ -269,9 +209,10 @@ const ButtonLeft = styled.button`
   height: 50px;
   border-radius: 50%;
   background-color: #fff;
-  box-shadow: 0 4px 20px 0 rgba(66,66,66,.2);
+  box-shadow: 0 4px 20px 0 rgba(66, 66, 66, 0.2);
   cursor: pointer;
-  z-index: 10000;
+  z-index: 10;
+  ${({ theme }) => theme.flex("center", "center", "column")}
 `;
 
 const ButtonRight = styled.button`
@@ -283,7 +224,8 @@ const ButtonRight = styled.button`
   height: 50px;
   border-radius: 50%;
   background-color: #fff;
-  box-shadow: 0 4px 20px 0 rgba(66,66,66,.2);
+  box-shadow: 0 4px 20px 0 rgba(66, 66, 66, 0.2);
   cursor: pointer;
-  z-index: 10000;
+  z-index: 10;
+  ${({ theme }) => theme.flex("center", "center", "column")}
 `;
