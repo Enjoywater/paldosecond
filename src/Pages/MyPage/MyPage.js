@@ -11,6 +11,7 @@ const MyPage = () => {
   const handleImgForm = (e) => {
     const formData = new FormData();
     formData.append("filename", e.target.files[0], e.target.files[0].name);
+    console.log("filename", e.target.files[0], e.target.files[0].name);
     fetch(`${api}/accounts/profile`, {
       method: "POST",
       headers: {
@@ -19,9 +20,12 @@ const MyPage = () => {
       body: formData,
     })
       .then((res) => res.json())
-      .then((result) =>
-        result.message !== "SUCCESS" ? alert("오류가 발생했습니다.") : ""
-      );
+      .then((result) => {
+        console.log(result);
+        return result.message !== "SUCCESS"
+          ? alert("오류가 발생했습니다.")
+          : "";
+      });
 
     let reader = new FileReader();
 
