@@ -10,7 +10,7 @@
 * [프론트 주소](https://github.com/wecode-bootcamp-korea/12-Paldo-frontend)
 * [백엔드 주소](https://github.com/wecode-bootcamp-korea/12-Paldo-backend)
 
-* Project Video(https://youtu.be/kqfzmZR_0fs)
+* [Project Video](https://youtu.be/kqfzmZR_0fs)
 
 <br />
 
